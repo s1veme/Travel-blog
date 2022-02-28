@@ -1,0 +1,29 @@
+@use 'sass:math'
+$color-accent: #0a703d
+$color-dark: #000000
+$container: 1470
+
+@mixin font($font-size-min, $font-between, $font-size-max,$line-height)
+  font-size: calc(#{$font-size-min} + #{$font-between} * (100vw / #{$container}))
+  line-height: math.div($line-height, $font-size-max)
+
+@mixin centering()
+  position: absolute
+  left: 50%
+  top: 50%
+  transform: translate(-50%, -50%)
+
+@mixin pseudo-element($content: '', $display: block, $pos: absolute)
+  content: $content
+  display: $display
+  position: $pos
+
+%paragraph
+  @include font(10px, 6, 16px, 26px)
+
+%heading-one
+  font-weight: bold
+  @include font(24px, 40, 64px, 80px)
+
+%subtitle-one
+  @include font(18px, 3, 21px, 32px)
