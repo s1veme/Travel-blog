@@ -3,21 +3,22 @@
     <my-header />
     <hero />
   </div>
-  <catelogies-slider />
+
+  <categories-slider />
 </template>
 
 <script lang="ts">
 import { defineComponent } from "vue";
 import MyHeader from "@/components/MyHeader.vue";
 import Hero from "@/components/Hero.vue";
-import CatelogiesSlider from "@/components/CatelogiesSlider.vue";
+import CategoriesSlider from "@/components/CategoriesSlider.vue";
 
 export default defineComponent({
   name: "home",
   components: {
     MyHeader,
     Hero,
-    CatelogiesSlider
+    CategoriesSlider
   }
 });
 </script>
