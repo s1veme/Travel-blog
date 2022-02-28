@@ -1,7 +1,7 @@
 <template>
   <div class="categories-slider">
     <div class="categories-slider__container">
-      <h2 class="title">Explore by category</h2>
+      <h2 class="heading-three title">Explore by category</h2>
       <div class="categories-slider-block">
         <swiper
           :slidesPerView="8"
@@ -14,7 +14,7 @@
             class="categories-slider-slide"
             v-for="(item, index) in 10"
             :key="index"
-          >{{ index }}
+            >{{ index }}
           </swiper-slide>
         </swiper>
       </div>
@@ -23,23 +23,14 @@
 </template>
 
 <script>
-// Import Swiper Vue.js components
 import { Swiper, SwiperSlide } from "swiper/vue";
 
-// swiper bundle styles
 import "swiper/swiper-bundle.min.css";
-
-// swiper core styles
 import "swiper/swiper.min.css";
-
-// modules styles
 import "swiper/components/navigation/navigation.min.css";
-
-// import Swiper core and required modules
 import SwiperCore, { Navigation } from "swiper";
 
-// install Swiper modules
-SwiperCore.use([ Navigation]);
+SwiperCore.use([Navigation]);
 export default {
   components: {
     Swiper,
@@ -49,14 +40,12 @@ export default {
 </script>
 <style scoped lang="sass">
 @import "../assets/sass/helps/mixins"
+
 .categories-slider-block
   margin-bottom: 120px
   margin-right: 0
   width: auto
   height: 315px
-  display: flex
-  flex-direction: column
-
 
 .categories-slider
   &-slide
@@ -69,6 +58,7 @@ export default {
     flex-direction: column
     align-items: center
     justify-content: center
+    transition: all 300ms ease-in-out
 
     &:hover
       background-color: #7d7d7d
@@ -77,9 +67,7 @@ export default {
       height: 315px
 
 .title
-  @extend %heading-three
   margin-bottom: 60px
   margin-top: 70px
-
 
 </style>
