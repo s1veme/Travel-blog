@@ -105,15 +105,5 @@ export default defineComponent({
   left: 50px
   margin-top: 34px
 
-  &__prev,
-  &__next
-    width: 64px
-    height: 64px
-
-  &__prev
-    background-color: #fff
-
-  &__next
-    background-color: #000
 
 </style>
