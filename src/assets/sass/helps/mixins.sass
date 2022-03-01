@@ -4,7 +4,7 @@ $color-dark: #000000
 $container: 1470
 
 @mixin font($font-size-min, $font-between, $font-size-max,$line-height)
-  font-size: calc(#{$font-size-min} + #{$font-between} * (100vw / #{$container}))
+  font-size: calc(#{$font-size-min} + #{$font-between} * (50vw / #{$container}))
   line-height: math.div($line-height, $font-size-max)
 
 @mixin centering()
