@@ -21,6 +21,7 @@ import RecentArticles from "@/components/RecentArticles.vue";
 import RecentArticle from "@/types/RecentArticle";
 import Who from "@/components/Who.vue";
 
+
 export default defineComponent({
   name: "home",
   components: {
@@ -50,6 +51,8 @@ export default defineComponent({
         image: require("../assets/articles/2.jpg")
       }
     ]);
+
+
     return {
       recentArticles
     };

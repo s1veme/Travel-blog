@@ -46,8 +46,13 @@
       <p class="subscribe__subtitle paragraph">Subscribe to receive exclusive content updates, travel & photo tips!</p>
       <form>
         <label class="subscribe__label who__label" for="subscribeEmail">Email address</label>
-        <input type="text" id="subscribeEmail" placeholder="example@|" class="subscribe__input who__input paragraph">
-        <button type="button" class="button__black subscribe__button">Subscribe</button>
+        <input
+          v-model="emailSubscribe"
+          type="text" id="subscribeEmail" placeholder="example@|" class="subscribe__input who__input paragraph">
+        <button
+          @click="subscribe"
+          type="button" class="button__black subscribe__button">Subscribe
+        </button>
       </form>
     </div>
     <div class="where">
@@ -60,14 +65,48 @@
         <input class="where__destination who__input paragraph" id="destination" type="text" placeholder="Japan">
         <input class="who__input paragraph" type="text" placeholder="Check-in date">
         <input class="who__input paragraph" type="text" placeholder="Check-out date">
-        <button type="button" class="button__black subscribe__button">Read more</button>
+        <button
+          @click="sendForm"
+          type="button" class="button__black subscribe__button">Read more
+        </button>
       </form>
     </div>
   </div>
 </template>
 
-<script>
-export default {};
+<script lang="ts">
+import { defineComponent, ref } from "vue";
+import DataService from "@/api/dataService";
+
+export default defineComponent({
+  setup() {
+    const dataService = new DataService();
+    const emailSubscribe = ref("");
+
+    async function subscribe() {
+      let data = {
+        email: emailSubscribe
+      };
+      console.log(data);
+      try {
+        dataService.newsLetter(data);
+
+      } catch (error) {
+        console.log(error.response.data);
+      }
+    };
+
+    function sendForm() {
+      console.log("sended");
+      dataService.getAll();
+    };
+    return {
+      sendForm,
+      subscribe,
+      emailSubscribe
+    };
+  }
+});
 </script>
 
 <style scoped lang="sass">
