@@ -1,7 +1,7 @@
 package apiserver
 
 import (
-	"blog/internal/applications/store/sqlstore"
+	sqlstore "blog/internal/applications/store"
 	"database/sql"
 	"net/http"
 )

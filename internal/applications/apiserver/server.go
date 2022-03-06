@@ -1,9 +1,9 @@
 package apiserver
 
 import (
-	"blog/internal/applications/model"
 	"blog/internal/applications/store"
-	"encoding/json"
+	"blog/internal/applications/user"
+	userRepository "blog/internal/applications/user/db"
 	"github.com/gorilla/mux"
 	"github.com/sirupsen/logrus"
 	"net/http"
@@ -23,6 +23,7 @@ func newServer(store store.Store) *server {
 	}
 
 	s.configureRouter()
+	s.logger.Info("route registration successful")
 
 	return s
 }
@@ -32,46 +33,7 @@ func (s *server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *server) configureRouter() {
-	s.router.HandleFunc("/users", s.handleUsersCreate()).Methods("POST")
-}
-
-func (s *server) handleUsersCreate() http.HandlerFunc {
-	type request struct {
-		Email    string `json:"email"`
-		Username string `json:"username"`
-		Password string `json:"password"`
-	}
-	return func(w http.ResponseWriter, r *http.Request) {
-		req := &request{}
-		if err := json.NewDecoder(r.Body).Decode(req); err != nil {
-			s.error(w, http.StatusBadRequest, err)
-			return
-		}
-
-		u := &model.User{
-			Email:    req.Email,
-			Username: req.Username,
-			Password: req.Password,
-		}
-
-		if err := s.store.User().Create(u); err != nil {
-			s.error(w, http.StatusUnprocessableEntity, err)
-			return
-		}
-
-		u.Sanitize()
-		s.respond(w, http.StatusCreated, u)
-	}
-}
-
-func (s *server) error(w http.ResponseWriter, code int, err error) {
-	s.respond(w, code, map[string]string{"error": err.Error()})
-}
-
-func (s *server) respond(w http.ResponseWriter, code int, data interface{}) {
-	w.WriteHeader(code)
-	err := json.NewEncoder(w).Encode(data)
-	if err != nil {
-		return
-	}
+	repository := userRepository.NewRepository(s.store, s.logger)
+	userHandler := user.NewHandler(s.logger, repository)
+	userHandler.Register(s.router)
 }
