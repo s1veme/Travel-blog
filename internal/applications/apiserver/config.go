@@ -1,9 +1,14 @@
 package apiserver
 
+import "time"
+
 type Config struct {
-	BindAddr    string `toml:"bind_addr"`
-	LogLevel    string `toml:"log_level"`
-	DatabaseURL string `toml:"database_url"`
+	BindAddr    string        `toml:"bind_addr"`
+	LogLevel    string        `toml:"log_level"`
+	DatabaseURL string        `toml:"database_url"`
+	SigningKey  string        `toml:"signing_key"`
+	HashSalt    string        `toml:"hash_salt"`
+	TokenTtl    time.Duration `toml:"token_ttl"`
 }
 
 func NewConfig() *Config {

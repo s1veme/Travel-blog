@@ -1,6 +1,7 @@
 package user
 
 import (
+	"blog/internal/applications/model"
 	"blog/internal/applications/store"
 	"blog/internal/applications/user"
 	"database/sql"
@@ -20,7 +21,7 @@ func NewRepository(client store.Store, logger *logrus.Logger) user.UserRepositor
 	}
 }
 
-func (r *repository) Create(u *user.User) error {
+func (r *repository) Create(u *model.User) error {
 	if err := u.Validate(); err != nil {
 		return err
 	}
@@ -35,8 +36,8 @@ func (r *repository) Create(u *user.User) error {
 	).Scan(&u.ID)
 }
 
-func (r *repository) FindByEmail(email string) (*user.User, error) {
-	u := &user.User{}
+func (r *repository) FindByEmail(email string) (*model.User, error) {
+	u := &model.User{}
 	if err := r.store.Db.QueryRow(
 		"SELECT id, email, username, encrypted_password FROM users WHERE email = $1",
 		email).Scan(&u.ID, &u.Email, &u.Username, &u.EncryptedPassword); err != nil {

@@ -1,6 +1,8 @@
 package user
 
+import "blog/internal/applications/model"
+
 type UserRepository interface {
-	Create(*User) error
-	FindByEmail(string) (*User, error)
+	Create(*model.User) error
+	FindByEmail(string) (*model.User, error)
 }

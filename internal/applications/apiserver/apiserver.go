@@ -19,7 +19,7 @@ func Start(config *Config) error {
 		}
 	}(db)
 	store := sqlstore.New(db)
-	s := newServer(store)
+	s := newServer(store, config)
 	s.logger.Info("Start server")
 	return http.ListenAndServe(config.BindAddr, s)
 }

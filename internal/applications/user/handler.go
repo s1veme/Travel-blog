@@ -2,6 +2,8 @@ package user
 
 import (
 	"blog/internal/applications/handlers"
+	"blog/internal/applications/model"
+	"blog/pkg/auth"
 	"encoding/json"
 	"github.com/gorilla/mux"
 	"github.com/sirupsen/logrus"
@@ -9,23 +11,27 @@ import (
 )
 
 const (
-	baseUser = "/api/users/"
+	baseUser    = "/api/users/"
+	tokenCreate = "/api/auth/"
 )
 
 type handler struct {
 	logger     *logrus.Logger
 	repository UserRepository
+	usecase    auth.UseCase
 }
 
-func NewHandler(logger *logrus.Logger, repository UserRepository) handlers.Handler {
+func NewHandler(logger *logrus.Logger, repository UserRepository, usecase auth.UseCase) handlers.Handler {
 	return &handler{
 		logger:     logger,
 		repository: repository,
+		usecase:    usecase,
 	}
 }
 
 func (h *handler) Register(router *mux.Router) {
 	router.HandleFunc(baseUser, h.handlerUsersCreate).Methods("POST")
+	router.HandleFunc(tokenCreate, h.handlerTokenCreate).Methods("POST")
 }
 
 func (h *handler) handlerUsersCreate(w http.ResponseWriter, r *http.Request) {
@@ -41,7 +47,7 @@ func (h *handler) handlerUsersCreate(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	u := &User{
+	u := &model.User{
 		Email:    req.Email,
 		Username: req.Username,
 		Password: req.Password,
@@ -54,6 +60,39 @@ func (h *handler) handlerUsersCreate(w http.ResponseWriter, r *http.Request) {
 
 	u.Sanitize()
 	h.respond(w, http.StatusCreated, u)
+}
+
+func (h *handler) handlerTokenCreate(w http.ResponseWriter, r *http.Request) {
+	req := new(model.User)
+	if err := json.NewDecoder(r.Body).Decode(req); err != nil {
+		h.error(w, http.StatusBadRequest, err)
+		return
+	}
+
+	u, err := h.repository.FindByEmail(req.Email)
+	if err != nil || !u.ComparePassword(req.Password) {
+		h.error(w, http.StatusBadRequest, err)
+		return
+	}
+
+	token, err := h.usecase.SignIn(req)
+
+	if err != nil {
+		if err == auth.ErrInvalidAccessToken {
+			h.error(w, http.StatusBadRequest, err)
+			return
+		}
+
+		if err == auth.ErrUserDoesNotExist {
+			h.error(w, http.StatusBadRequest, err)
+			return
+		}
+
+		h.error(w, http.StatusBadRequest, err)
+		return
+	}
+
+	h.respond(w, http.StatusOK, token)
 }
 
 // TODO: delete hardcode
