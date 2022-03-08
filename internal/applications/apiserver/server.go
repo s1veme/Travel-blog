@@ -1,6 +1,8 @@
 package apiserver
 
 import (
+	"blog/internal/applications/post"
+	postRepository "blog/internal/applications/post/db"
 	"blog/internal/applications/store"
 	"blog/internal/applications/user"
 	userRepository "blog/internal/applications/user/db"
@@ -27,6 +29,7 @@ func newServer(store store.Store, config *Config) *server {
 	}
 
 	urepository := userRepository.NewRepository(s.store, s.logger)
+	prepository := postRepository.NewRepository(s.store, s.logger)
 
 	authUseCase := usecase.NewAuthorizer(
 		urepository,
@@ -35,7 +38,7 @@ func newServer(store store.Store, config *Config) *server {
 		config.TokenTtl*time.Second,
 	)
 	s.authUseCase = authUseCase
-	s.configureRouter(urepository)
+	s.configureRouter(urepository, prepository)
 
 	s.logger.Info("route registration successful")
 
@@ -46,9 +49,10 @@ func (s *server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	s.router.ServeHTTP(w, r)
 }
 
-func (s *server) configureRouter(urepository user.UserRepository) user.UserRepository {
+func (s *server) configureRouter(urepository user.UserRepository, prepository post.PostRepository) {
 	userHandler := user.NewHandler(s.logger, urepository, s.authUseCase)
 	userHandler.Register(s.router)
 
-	return urepository
+	postHandler := post.NewHandler(s.logger, prepository)
+	postHandler.Register(s.router)
 }

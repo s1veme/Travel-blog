@@ -30,8 +30,8 @@ func NewHandler(logger *logrus.Logger, repository UserRepository, usecase auth.U
 }
 
 func (h *handler) Register(router *mux.Router) {
-	router.HandleFunc(baseUser, h.handlerUsersCreate).Methods("POST")
-	router.HandleFunc(tokenCreate, h.handlerTokenCreate).Methods("POST")
+	router.HandleFunc(baseUser, h.handlerUsersCreate).Methods("POST", "OPTIONS")
+	router.HandleFunc(tokenCreate, h.handlerTokenCreate).Methods("POST", "OPTIONS")
 }
 
 func (h *handler) handlerUsersCreate(w http.ResponseWriter, r *http.Request) {

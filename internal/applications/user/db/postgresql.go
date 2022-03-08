@@ -14,7 +14,6 @@ type repository struct {
 }
 
 func NewRepository(client store.Store, logger *logrus.Logger) user.UserRepository {
-
 	return &repository{
 		store:  client,
 		logger: logger,
