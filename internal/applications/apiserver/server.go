@@ -19,13 +19,15 @@ type server struct {
 	logger      *logrus.Logger
 	store       store.Store
 	authUseCase auth.UseCase
+	signingKey  string
 }
 
 func newServer(store store.Store, config *Config) *server {
 	s := &server{
-		router: mux.NewRouter(),
-		logger: logrus.New(),
-		store:  store,
+		router:     mux.NewRouter(),
+		logger:     logrus.New(),
+		store:      store,
+		signingKey: config.SigningKey,
 	}
 
 	urepository := userRepository.NewRepository(s.store, s.logger)
@@ -53,6 +55,6 @@ func (s *server) configureRouter(urepository user.UserRepository, prepository po
 	userHandler := user.NewHandler(s.logger, urepository, s.authUseCase)
 	userHandler.Register(s.router)
 
-	postHandler := post.NewHandler(s.logger, prepository)
+	postHandler := post.NewHandler(s.logger, prepository, urepository, s.signingKey)
 	postHandler.Register(s.router)
 }

@@ -6,9 +6,10 @@ import (
 )
 
 func ParseToken(accessToken string, signingKey []byte) (string, error) {
+	fmt.Println(accessToken)
 	token, err := jwt.ParseWithClaims(accessToken, &Claims{}, func(token *jwt.Token) (interface{}, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
-			return nil, fmt.Errorf("Unexpected signing method: %v", token.Header["alg"])
+			return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
 		}
 		return signingKey, nil
 	})

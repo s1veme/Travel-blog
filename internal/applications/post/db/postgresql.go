@@ -20,7 +20,10 @@ func NewRepository(client store.Store, logger *logrus.Logger) post.PostRepositor
 }
 
 func (r *repository) Create(m *model.Post) error {
-	panic("implement me")
+	return r.store.Db.QueryRow(
+		"INSERT INTO posts (title, content, owner) VALUES ($1, $2, $3) RETURNING id",
+		m.Title, m.Content, m.Owner,
+	).Scan(&m.ID)
 }
 
 func (r *repository) GetList() (*[]model.Post, error) {
