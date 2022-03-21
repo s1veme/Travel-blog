@@ -4,6 +4,7 @@ import (
 	"blog/internal/applications/model"
 	"blog/internal/applications/post"
 	"blog/internal/applications/store"
+	"database/sql"
 	"github.com/sirupsen/logrus"
 )
 
@@ -53,10 +54,25 @@ func (r *repository) GetList() (*[]model.Post, error) {
 	return &posts, nil
 }
 
-func (r *repository) GetByID(id int) (model.Post, error) {
-	panic("implement me")
+func (r *repository) GetByID(id int) (*model.Post, error) {
+	p := &model.Post{}
+
+	err := r.store.Db.QueryRow(
+		"SELECT id, title, content, owner FROM posts WHERE id = $1", id).Scan(&p.ID, &p.Title, &p.Content, &p.Owner)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return nil, store.ErrRecordNotFound
+		}
+		return nil, err
+	}
+
+	return p, nil
 }
 
 func (r *repository) Delete(id int) error {
-	panic("implement me")
+	_, err := r.store.Db.Exec("DELETE FROM posts WHERE id = $1", id)
+	if err != nil {
+		return err
+	}
+	return nil
 }

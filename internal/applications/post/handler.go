@@ -10,6 +10,7 @@ import (
 	"github.com/gorilla/mux"
 	"github.com/sirupsen/logrus"
 	"net/http"
+	"strconv"
 )
 
 const (
@@ -55,8 +56,21 @@ func (h *handler) handlerGetList(writer http.ResponseWriter, request *http.Reque
 	h.respond(writer, http.StatusOK, posts)
 }
 
-func (h *handler) handlerGetPost(writer http.ResponseWriter, request *http.Request) {
+func (h *handler) handlerGetPost(w http.ResponseWriter, r *http.Request) {
+	stringID := mux.Vars(r)["id"]
+	id, err := strconv.Atoi(stringID)
+	if err != nil {
+		h.error(w, http.StatusNotFound, err)
+		return
+	}
 
+	post, err := h.repository.GetByID(id)
+	if err != nil {
+		h.error(w, http.StatusNotFound, err)
+		return
+	}
+
+	h.respond(w, http.StatusOK, post)
 }
 
 func (h *handler) handlerCreatePost(w http.ResponseWriter, r *http.Request) {
@@ -82,14 +96,27 @@ func (h *handler) handlerCreatePost(w http.ResponseWriter, r *http.Request) {
 
 	err := h.repository.Create(post)
 	if err != nil {
-		h.respond(w, http.StatusBadRequest, err)
+		h.error(w, http.StatusBadRequest, err)
 		return
 	}
 	h.respond(w, http.StatusCreated, post)
 }
 
-func (h *handler) handlerDeletePost(writer http.ResponseWriter, request *http.Request) {
+func (h *handler) handlerDeletePost(w http.ResponseWriter, r *http.Request) {
+	stringID := mux.Vars(r)["id"]
+	id, err := strconv.Atoi(stringID)
+	if err != nil {
+		h.error(w, http.StatusNotFound, err)
+		return
+	}
 
+	err = h.repository.Delete(id)
+	if err != nil {
+		h.error(w, http.StatusNotFound, err)
+		return
+	}
+
+	h.respond(w, http.StatusOK, "deleted")
 }
 
 func (h *handler) error(w http.ResponseWriter, code int, err error) {
